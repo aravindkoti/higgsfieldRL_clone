@@ -26,6 +26,9 @@ class training():
 
         self.gamma = gamma
 
+        self.losses = []
+        self.all_rewards = []
+
     
     def compute_td_loss(self, batch_size):
         state, action, reward, next_state, done = self.replay_buffer.sample(batch_size)
@@ -50,3 +53,34 @@ class training():
         self.optimizer.step()
     
         return loss
+
+    def training_loop(self, num_frames, batch_size):
+
+        episode_reward = 0
+
+        state = self.environment.reset()
+        for frame_idx in range(1, num_frames + 1):
+            epsilon_instantiate = epsilon_greedy()
+            epsilon = epsilon_instantiate.epsilon_by_frame(frame_idx)
+            action = self.model.act(state, epsilon)
+            
+    
+            next_state, reward, done, _ = self.environment.step(torch.tensor([[action]]).item())
+            self.replay_buffer.push(state, action, reward, next_state, done)
+    
+            state = next_state
+            episode_reward += reward
+    
+            if done:
+                state = self.environment.reset()
+                self.all_rewards.append(episode_reward)
+                #writer.add_scalar('Episode rewards', episode_reward, frame_idx)
+                episode_reward = 0
+        
+            if len(self.replay_buffer) > batch_size:
+                loss = self.compute_td_loss(batch_size)
+                self.losses.append(loss.data)
+                #writer.add_scalar('Episode Losses', loss.data, frame_idx)
+        
+            if frame_idx % 200 == 0:
+                plot(frame_idx, self.all_rewards, self.losses)
