@@ -12,8 +12,8 @@ class epsilon_greedy():
         self.epsilon_by_frame = lambda frame_idx: self.epsilon_final + (
             (self.epsilon_start - self.epsilon_final) * math.exp(-1. * frame_idx / self.epsilon_decay))
     
-    def plot(self):
-        plt.plot([self.epsilon_by_frame(i) for i in range(10000)])
+    def plot(self, plot_range = 10000):
+        plt.plot([self.epsilon_by_frame(i) for i in range(plot_range)])
 
 
 
