@@ -5,9 +5,10 @@ import torch.autograd as autograd
 import numpy as np
 
 class DQN(nn.Module):
-    def __init__(self, num_inputs, num_actions, environment, Variable):
+    def __init__(self, num_inputs, num_actions, environment, device, Variable):
         self.environment = environment
         self.Variable = Variable
+        self.device = device
 
         super(DQN, self).__init__()
         
@@ -20,6 +21,7 @@ class DQN(nn.Module):
         )
         
     def forward(self, x):
+        x = x.to(self.device)
         return self.layers(x)
     
     def act(self, state, epsilon):
@@ -32,9 +34,10 @@ class DQN(nn.Module):
         return action
 
 class CnnDQN(nn.Module):
-    def __init__(self, input_shape, num_actions, environment, Variable):
+    def __init__(self, input_shape, num_actions, environment, device, Variable):
         self.environment = environment
         self.Variable = Variable
+        self.device = device
 
         super(CnnDQN, self).__init__()
         
@@ -57,6 +60,7 @@ class CnnDQN(nn.Module):
         )
         
     def forward(self, x):
+        x = x.to(self.device)
         x = self.features(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)

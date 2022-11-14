@@ -11,15 +11,16 @@ import torch.nn.functional as F
 import numpy as np
 
 class training():
-    def __init__(self, environment, Variable, USE_CUDA, gamma = 0.99):
+    def __init__(self, environment, Variable, USE_CUDA, device, gamma = 0.99):
         self.environment = environment
         self.Variable = Variable
+        self.device = device
         self.model = DQN(self.environment.observation_space.shape[0], 
-                        self.environment.action_space.n, environment=self.environment, 
-                        Variable=self.Variable)
+                        self.environment.action_space.n, environment=self.environment,
+                        device=self.device, Variable=self.Variable)
         def CUDA():
             if USE_CUDA:
-                self.model = self.model.cuda()
+                self.model = self.model.to(self.device)
         
         self.optimizer = optim.Adam(self.model.parameters())
         self.replay_buffer = ReplayBuffer(1000)
@@ -92,16 +93,17 @@ class training():
 
 
 class training_atari():
-    def __init__(self, environment, Variable, USE_CUDA, gamma = 0.99):
+    def __init__(self, environment, Variable, USE_CUDA, device, gamma = 0.99):
         self.environment = environment
         self.Variable = Variable
+        self.device = device
         self.model = CnnDQN(input_shape = self.environment.observation_space.shape, 
                             num_actions = self.environment.action_space.n,
                             environment=self.environment,
-                            Variable=self.Variable)
+                            device=self.device, Variable=self.Variable)
         def CUDA():
             if USE_CUDA:
-                self.model = self.model.cuda()
+                self.model = self.model.to(self.device)
         
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.00001)
         self.replay_buffer = ReplayBuffer(100000)
