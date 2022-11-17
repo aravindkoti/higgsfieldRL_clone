@@ -76,7 +76,7 @@ class training():
     
             if done:
                 state = self.environment.reset()
-                self.all_rewards.append(episode_reward)
+                self.all_rewards.append(episode_reward.cpu())
 
                 if tensorboard:
                     writer.add_scalar('Episode rewards', episode_reward, frame_idx)
@@ -86,7 +86,7 @@ class training():
         
             if len(self.replay_buffer) > batch_size:
                 loss = self.compute_td_loss(batch_size)
-                self.losses.append(loss.data)
+                self.losses.append(loss.data.cpu())
 
                 if tensorboard:
                     writer.add_scalar('Episode Losses', loss.data, frame_idx)
