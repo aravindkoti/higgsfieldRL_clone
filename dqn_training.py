@@ -92,7 +92,7 @@ class training():
                     writer.add_scalar('Episode Losses', loss.data, frame_idx)
         
             if frame_idx % 200 == 0:
-                plot(frame_idx, self.all_rewards.cpu(), self.losses.cpu())
+                plot(frame_idx, self.all_rewards, self.losses)
 
 
 class training_atari():
