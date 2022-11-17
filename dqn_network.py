@@ -22,6 +22,7 @@ class DQN(nn.Module):
         )
         
     def forward(self, x):
+        x = x.to(self.device)
         return self.layers(x)
     
     def act(self, state, epsilon):
