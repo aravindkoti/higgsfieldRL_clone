@@ -77,7 +77,6 @@ class training():
     
             if done:
                 state = self.environment.reset()
-                episode_reward = episode_reward.cpu()   #Moving back to cpu for plotting
                 self.all_rewards.append(episode_reward)
 
                 if tensorboard:
