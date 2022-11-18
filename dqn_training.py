@@ -17,10 +17,10 @@ class training():
         self.device = device
         self.model = DQN(self.environment.observation_space.shape[0], 
                         self.environment.action_space.n, environment=self.environment,
-                        device=self.device, Variable=self.Variable)
-        def CUDA():
-            if USE_CUDA:
-                self.model = self.model.to(self.device)
+                        device=self.device, Variable=self.Variable).to(self.device)
+        #def CUDA():
+            #if USE_CUDA:
+                #self.model = self.model.to(self.device)
         
         self.optimizer = optim.Adam(self.model.parameters())
         self.replay_buffer = ReplayBuffer(1000)
@@ -61,6 +61,7 @@ class training():
 
         episode_reward = 0
         print("Model is set to device:  ", self.model.device)
+
         state = self.environment.reset()
         for frame_idx in range(1, num_frames + 1):
             epsilon_instantiate = epsilon_greedy()
