@@ -77,6 +77,7 @@ class training():
     
             if done:
                 state = self.environment.reset()
+                episode_reward = episode_reward.cpu()   #Moving back to cpu for plotting
                 self.all_rewards.append(episode_reward)
 
                 if tensorboard:
@@ -87,6 +88,7 @@ class training():
         
             if len(self.replay_buffer) > batch_size:
                 loss = self.compute_td_loss(batch_size)
+                loss = loss.cpu()   #Moving back to cpu for plotting
                 self.losses.append(loss.data)
 
                 if tensorboard:
