@@ -105,10 +105,10 @@ class training_atari():
         self.model = CnnDQN(input_shape = self.environment.observation_space.shape, 
                             num_actions = self.environment.action_space.n,
                             environment=self.environment,
-                            device=self.device, Variable=self.Variable)
-        def CUDA():
-            if USE_CUDA:
-                self.model = self.model.to(self.device)
+                            device=self.device, Variable=self.Variable).to(self.device)
+        #def CUDA():
+            #if USE_CUDA:
+                #self.model = self.model.to(self.device)
         
         self.optimizer = optim.Adam(self.model.parameters(), lr=0.00001)
         self.replay_buffer = ReplayBuffer(100000)
@@ -147,6 +147,7 @@ class training_atari():
     def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None):
 
         episode_reward = 0
+        print("Model is set to device:  ", self.model.device)
 
         state = self.environment.reset()
         for frame_idx in range(1, num_frames + 1):
@@ -172,6 +173,7 @@ class training_atari():
         
             if len(self.replay_buffer) > self.replay_initial:
                 loss = self.compute_td_loss(batch_size)
+                loss = loss.cpu()
                 self.losses.append(loss.data)
 
                 if tensorboard:
