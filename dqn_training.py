@@ -10,6 +10,8 @@ import torch.nn.functional as F
 
 import numpy as np
 
+import wandb
+
 class training():
     def __init__(self, environment, Variable, USE_CUDA, device, gamma = 0.99):
         self.environment = environment
@@ -57,7 +59,17 @@ class training():
     
         return loss
 
-    def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None):
+    def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None,
+                        wandb_plot = False):
+        if wandb_plot:
+            wandb.init(
+                project= "Cartpole Training",
+                name= "Run",
+                config={
+                    "discount rate:": 0.99,
+                    "environment": "CartPole-v0"
+                }
+            )
 
         episode_reward = 0
         print("Model is set to device:  ", self.model.device)
@@ -78,6 +90,9 @@ class training():
             if done:
                 state = self.environment.reset()
                 self.all_rewards.append(episode_reward)
+                
+                if wandb_plot:
+                    wandb.log({"Rewards": episode_reward})
 
                 if tensorboard:
                     writer.add_scalar('Episode rewards', episode_reward, frame_idx)
@@ -90,13 +105,18 @@ class training():
                 loss = loss.cpu()   #Moving back to cpu for plotting
                 self.losses.append(loss.data)
 
+                if wandb_plot:
+                    wandb.log({"Episode Losses": loss.data})
+
                 if tensorboard:
                     writer.add_scalar('Episode Losses', loss.data, frame_idx)
         
             if frame_idx % 200 == 0:
                 plot(frame_idx, self.all_rewards, self.losses)
 
+        wandb.finish()
 
+        
 class training_atari():
     def __init__(self, environment, Variable, USE_CUDA, device, gamma = 0.99):
         self.environment = environment
