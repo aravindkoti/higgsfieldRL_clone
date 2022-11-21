@@ -116,7 +116,7 @@ class training():
 
         wandb.finish()
 
-        
+
 class training_atari():
     def __init__(self, environment, Variable, USE_CUDA, device, gamma = 0.99):
         self.environment = environment
@@ -164,7 +164,18 @@ class training_atari():
     
         return loss
 
-    def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None):
+    def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None,
+                        wandb_plot=False):
+
+        if wandb_plot:
+            wandb.init(
+                project= "Atari Training",
+                name= "atari run",
+                config={
+                    "discount rate:": 0.99,
+                    "environment": "Atari Breakout NoFrameskip-v4"
+                }
+            )
 
         episode_reward = 0
         print("Model is set to device:  ", self.model.device)
@@ -186,6 +197,9 @@ class training_atari():
                 state = self.environment.reset()
                 self.all_rewards.append(episode_reward)
 
+                if wandb_plot:
+                    wandb.log({"Rewards": episode_reward})
+
                 if tensorboard:
                     writer.add_scalar('Episode rewards', episode_reward, frame_idx)
 
@@ -196,12 +210,16 @@ class training_atari():
                 loss = loss.cpu()
                 self.losses.append(loss.data)
 
+                if wandb_plot:
+                    wandb.log({"Episode Losses": loss.data})
+
                 if tensorboard:
                     writer.add_scalar('Episode Losses', loss.data, frame_idx)
         
             if frame_idx % 10000 == 0:
                 plot(frame_idx, self.all_rewards, self.losses)
 
+        wandb.finish()
 
 class gamma_train():
     def __init__(self, environment, Variable, USE_CUDA, device, gamma = 0.99):
