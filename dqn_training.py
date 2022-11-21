@@ -165,12 +165,12 @@ class training_atari():
         return loss
 
     def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None,
-                        wandb_plot=False):
+                        wandb_plot=False, run_number = None):
 
         if wandb_plot:
             wandb.init(
                 project= "Atari Training",
-                name= "atari run",
+                name= f"atari run {run_number}",
                 config={
                     "discount rate:": 0.99,
                     "environment": "Atari Breakout NoFrameskip-v4"
