@@ -91,8 +91,8 @@ class gamma_train():
                 self.all_rewards.append(episode_reward)
 
                 if tensorboard:
-                    writer.add_scalar('Episode rewards', {'run_{run_number}': episode_reward}, frame_idx)
-                    writer.add_scalar('Gamma', {'run_{run_number}': self.gamma}, frame_idx)
+                    writer.add_scalar(f'Episode rewards run {run_number}', episode_reward, frame_idx)
+                    writer.add_scalar(f'Gamma run {run_number}', self.gamma, frame_idx)
 
                 episode_reward = 0
         
@@ -101,7 +101,7 @@ class gamma_train():
                 self.losses.append(loss.data)
 
                 if tensorboard:
-                    writer.add_scalar('Episode Losses', {'run_{run_number}': loss.data}, frame_idx)
+                    writer.add_scalar(f'Episode Losses run {run_number}',loss.data, frame_idx)
         
             if frame_idx % 200 == 0:
                 plot(frame_idx, self.all_rewards, self.losses)
