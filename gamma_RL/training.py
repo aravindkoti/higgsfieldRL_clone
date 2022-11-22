@@ -13,8 +13,8 @@ import numpy as np
 
 class gamma_train():
     def __init__(self, environment, Variable, USE_CUDA, device, seed_number, gamma = 0.99):
-        def seed(seed_number):
-            seed_everything()
+        #def seed(seed_number):
+            #seed_everything()
 
         self.environment = environment
         self.Variable = Variable
@@ -69,7 +69,7 @@ class gamma_train():
         return loss
 
     def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None, 
-                        run_number = None):
+                        run_number = 1):
 
         episode_reward = 0
 
