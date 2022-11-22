@@ -270,6 +270,8 @@ class gamma_train():
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+        with torch.no_grad():
+            torch.clamp(self.model.gamma, min=0.0, max=1.0)
     
         return loss
 
