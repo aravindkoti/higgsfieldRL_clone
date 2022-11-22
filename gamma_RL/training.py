@@ -12,7 +12,7 @@ import numpy as np
 
 
 class gamma_train():
-    def __init__(self, environment, Variable, USE_CUDA, device, seed_number, gamma = 0.99):
+    def __init__(self, environment, Variable, USE_CUDA, device, gamma = 0.99):
         #def seed(seed_number):
             #seed_everything()
 

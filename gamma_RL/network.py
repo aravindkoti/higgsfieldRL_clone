@@ -7,7 +7,7 @@ import numpy as np
 
 
 class gamma_DQN(nn.Module):
-    def __init__(self, environment, device, Variable):
+    def __init__(self, num_inputs, num_actions, environment, device, Variable):
         self.environment = environment
         self.Variable = Variable
         self.device = device
