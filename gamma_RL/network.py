@@ -4,13 +4,18 @@ import random
 import torch.autograd as autograd
 import numpy as np
 
+from dqn_utils import seed_everything
+
 
 
 class gamma_DQN(nn.Module):
-    def __init__(self, num_inputs, num_actions, environment, device, Variable):
+    def __init__(self, num_inputs, num_actions, environment, device, Variable, seed_number):
         self.environment = environment
         self.Variable = Variable
         self.device = device
+
+        def seed(seed_number):
+            seed_everything()
         
 
         super(gamma_DQN, self).__init__()

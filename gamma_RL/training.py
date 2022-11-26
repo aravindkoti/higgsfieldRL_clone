@@ -23,7 +23,7 @@ class gamma_train():
         self.device = device
         self.model = gamma_DQN(self.environment.observation_space.shape[0], 
                         self.environment.action_space.n, environment=self.environment,
-                        device=self.device, Variable=self.Variable)
+                        device=self.device, Variable=self.Variable, seed_number=seed_number)
         def CUDA():
             if USE_CUDA:
                 self.model = self.model.to(self.device)
@@ -103,7 +103,7 @@ class gamma_train():
 
                 if wandb_plot:
                     wandb.log({"Rewards": episode_reward})
-                    wandb.log({"Gamma": self.model.gamma})
+                    wandb.log({"Gamma": self.model.gamma.data})
 
                 if tensorboard:
                     writer.add_scalar(f'Episode rewards run {run_number}', episode_reward, frame_idx)
