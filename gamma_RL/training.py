@@ -9,6 +9,7 @@ import torch.autograd as autograd
 import torch.nn.functional as F
 
 import numpy as np
+import wandb
 
 
 class gamma_train():
@@ -70,7 +71,16 @@ class gamma_train():
         return loss
 
     def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None, 
-                        run_number = 1):
+                        run_number = 1, wandb_plot=False):
+
+        if wandb_plot:
+            wandb.init(
+                project= "Gamma Cartpole Training",
+                name= f"Experiment_{run_number}",
+                config={
+                    "environment": "CartPole-v0"
+                }
+            )
 
         episode_reward = 0
 
@@ -91,6 +101,10 @@ class gamma_train():
                 state = self.environment.reset()
                 self.all_rewards.append(episode_reward)
 
+                if wandb_plot:
+                    wandb.log({"Rewards": episode_reward})
+                    wandb.log({"Gamma": self.model.gamma})
+
                 if tensorboard:
                     writer.add_scalar(f'Episode rewards run {run_number}', episode_reward, frame_idx)
                     writer.add_scalar(f'Gamma run {run_number}', self.gamma, frame_idx)
@@ -101,6 +115,9 @@ class gamma_train():
                 loss = self.compute_td_loss(batch_size)
                 self.losses.append(loss.data)
 
+                if wandb_plot:
+                    wandb.log({"Episode Losses": loss.data})
+                    
                 if tensorboard:
                     writer.add_scalar(f'Episode Losses run {run_number}',loss.data, frame_idx)
         
