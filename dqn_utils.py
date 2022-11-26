@@ -2,6 +2,8 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 from IPython.display import clear_output
+import torch
+import random
 
 class epsilon_greedy():
     def __init__(self, epsilon_start = 1.0, epsilon_final = 0.01, epsilon_decay = 500):
@@ -28,4 +30,10 @@ def plot(frame_idx, rewards, losses):
     plt.title('loss')
     plt.plot(losses)
     plt.show()
+
+
+def seed_everything(seed):
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
 
