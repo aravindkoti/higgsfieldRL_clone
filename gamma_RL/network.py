@@ -43,14 +43,16 @@ class gamma_DQN(nn.Module):
 
 
 #Going to implement a separate nn for gamma in this model
-class gamma_DQN_V2(nn.Module):
-    def __init__(self, num_inputs, num_actions, environment, device, Variable):
+class gamma_DQN_epsilonseed(nn.Module):
+    def __init__(self, num_inputs, num_actions, environment, device, Variable, seed_number):
         self.environment = environment
         self.Variable = Variable
         self.device = device
         
+        def seed(seed_number):
+            seed_everything()
 
-        super(gamma_DQN, self).__init__()
+        super(gamma_DQN_epsilonseed, self).__init__()
         self.gamma = nn.Parameter(torch.tensor(random.uniform(0.5,1)), requires_grad=True)
         
         self.layers = nn.Sequential(
@@ -64,7 +66,9 @@ class gamma_DQN_V2(nn.Module):
     def forward(self, x):
         return self.gamma * self.layers(x)
     
-    def act(self, state, epsilon):
+    def act(self, state, epsilon, random_seed):
+        seed_everything(random_seed)
+
         if random.random() > epsilon:
             state   = self.Variable(torch.FloatTensor(state).unsqueeze(0), volatile=True)
             q_value = self.forward(state)
