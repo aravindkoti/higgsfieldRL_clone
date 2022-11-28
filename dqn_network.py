@@ -4,6 +4,8 @@ import random
 import torch.autograd as autograd
 import numpy as np
 
+from dqn_utils import seed_everything
+
 class DQN(nn.Module):
     def __init__(self, num_inputs, num_actions, environment, device, Variable):
         self.environment = environment
@@ -113,7 +115,7 @@ class gamma_DQN(nn.Module):
 
 
 #Going to implement a separate nn for gamma in this model
-class gamma_DQN_V2(nn.Module):
+class gamma_DQN_epsilonseed(nn.Module):
     def __init__(self, num_inputs, num_actions, environment, device, Variable):
         self.environment = environment
         self.Variable = Variable
@@ -134,7 +136,9 @@ class gamma_DQN_V2(nn.Module):
     def forward(self, x):
         return self.gamma * self.layers(x)
     
-    def act(self, state, epsilon):
+    def act(self, state, epsilon, random_seed):
+        seed_everything(random_seed)
+
         if random.random() > epsilon:
             state   = self.Variable(torch.FloatTensor(state).unsqueeze(0), volatile=True)
             q_value = self.forward(state)
