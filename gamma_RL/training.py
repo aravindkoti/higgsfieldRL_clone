@@ -204,7 +204,7 @@ class gamma_train_epsilonseed():
 
             epsilon_instantiate = epsilon_greedy()
             epsilon = epsilon_instantiate.epsilon_by_frame(frame_idx)
-            action = self.model.act(state, epsilon, random_seed=seed_vector[frame_idx])
+            action = self.model.act(state, epsilon)
             
     
             next_state, reward, done, _ = self.environment.step(torch.tensor([[action]]).item())
