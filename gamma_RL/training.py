@@ -208,8 +208,12 @@ class gamma_train_epsilonseed():
             #Randomness from seed in network works separately from training module. Want to
             #preset the randomness here, so it obeys the random seed in each frame
             seed_everything(seed_vector[frame_idx])
+            
             epsilon_threshold = random.random()
+            wandb.log({"Epsilon Seed/Epsilon Threshold": epsilon_threshold})
+
             action_selection = random.randrange(self.environment.action_space.n)
+            wandb.log({"Epsilon Seed/Random Action": action_selection})
 
             epsilon_instantiate = epsilon_greedy()
             epsilon = epsilon_instantiate.epsilon_by_frame(frame_idx)
