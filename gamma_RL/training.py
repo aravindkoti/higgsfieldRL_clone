@@ -183,7 +183,7 @@ class gamma_train_epsilonseed():
     
         return loss
 
-    def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None, 
+    def training_loop(self, num_frames, batch_size, seed_vector, tensorboard = False, writer=None, 
                         run_number = 1, wandb_plot=False):
 
         if wandb_plot:
@@ -202,7 +202,7 @@ class gamma_train_epsilonseed():
 
             epsilon_instantiate = epsilon_greedy()
             epsilon = epsilon_instantiate.epsilon_by_frame(frame_idx)
-            action = self.model.act(state, epsilon, random_seed=frame_idx)
+            action = self.model.act(state, epsilon, random_seed=seed_vector[frame_idx])
             
     
             next_state, reward, done, _ = self.environment.step(torch.tensor([[action]]).item())
