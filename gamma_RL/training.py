@@ -124,7 +124,7 @@ class gamma_train():
             if frame_idx % 200 == 0:
                 plot(frame_idx, self.all_rewards, self.losses)
 
-
+#This is a model which matches the random processes between runs, so we can isolate the qualitative differences between gamma values
 class gamma_train_epsilonseed():
     def __init__(self, environment, Variable, USE_CUDA, device, seed_number, gamma = 0.99):
         
@@ -196,6 +196,10 @@ class gamma_train_epsilonseed():
             )
 
         episode_reward = 0
+        gamma_record = []
+        reward_record = []
+        losses_record = []
+
 
         state = self.environment.reset()
         for frame_idx in range(1, num_frames + 1):
@@ -225,6 +229,10 @@ class gamma_train_epsilonseed():
                     writer.add_scalar(f'Episode rewards run {run_number}', episode_reward, frame_idx)
                     writer.add_scalar(f'Gamma run {run_number}', self.gamma, frame_idx)
 
+                if (num_frames + 1) - frame_idx < 200:
+                    gamma_record.append(self.model.gamma.data)
+                    reward_record.append(episode_reward)
+
                 episode_reward = 0
         
             if len(self.replay_buffer) > batch_size:
@@ -236,6 +244,15 @@ class gamma_train_epsilonseed():
                     
                 if tensorboard:
                     writer.add_scalar(f'Episode Losses run {run_number}',loss.data, frame_idx)
+
+                if (num_frames + 1) - frame_idx < 200:
+                    losses_record.append(loss.data)
+
+
         
             if frame_idx % 200 == 0:
                 plot(frame_idx, self.all_rewards, self.losses)
+
+        gamma_avg = sum(gamma_record)/len(gamma_record)
+        rewards_avg = sum(reward_record)/len(reward_record)
+        losses_avg = sum(losses_record)/len(losses_record)
