@@ -66,8 +66,7 @@ class gamma_DQN_epsilonseed(nn.Module):
     def forward(self, x):
         return self.gamma * self.layers(x)
     
-    def act(self, state, epsilon, random_seed):
-        seed_everything(random_seed)
+    def act(self, state, epsilon):
 
         if random.random() > epsilon:
             state   = self.Variable(torch.FloatTensor(state).unsqueeze(0), volatile=True)
