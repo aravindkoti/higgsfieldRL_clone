@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.autograd as autograd 
 import torch.nn.functional as F
+import random
 
 import numpy as np
 import wandb
@@ -204,11 +205,16 @@ class gamma_train_epsilonseed():
         state = self.environment.reset()
         for frame_idx in range(1, num_frames + 1):
         
+            #Randomness from seed in network works separately from training module. Want to
+            #preset the randomness here, so it obeys the random seed in each frame
             seed_everything(seed_vector[frame_idx])
+            epsilon_threshold = random.random()
+            action_selection = random.randrange(self.environment.action_space.n)
 
             epsilon_instantiate = epsilon_greedy()
             epsilon = epsilon_instantiate.epsilon_by_frame(frame_idx)
-            action = self.model.act(state, epsilon)
+            action = self.model.act(state, epsilon, threshold=epsilon_threshold,
+                                        random_select=action_selection)
             
     
             next_state, reward, done, _ = self.environment.step(torch.tensor([[action]]).item())
