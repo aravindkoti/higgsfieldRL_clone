@@ -199,6 +199,8 @@ class gamma_train_epsilonseed():
 
         state = self.environment.reset()
         for frame_idx in range(1, num_frames + 1):
+        
+            seed_everything(seed_vector[frame_idx])
 
             epsilon_instantiate = epsilon_greedy()
             epsilon = epsilon_instantiate.epsilon_by_frame(frame_idx)
