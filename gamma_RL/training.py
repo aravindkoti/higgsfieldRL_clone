@@ -210,10 +210,11 @@ class gamma_train_epsilonseed():
             seed_everything(seed_vector[frame_idx])
             
             epsilon_threshold = random.random()
-            wandb.log({"Epsilon Seed/Epsilon Threshold": epsilon_threshold})
-
             action_selection = random.randrange(self.environment.action_space.n)
-            wandb.log({"Epsilon Seed/Random Action": action_selection})
+            
+            if frame_idx%200 ==0:
+                wandb.log({"Epsilon Seed/Epsilon Threshold": epsilon_threshold})
+                wandb.log({"Epsilon Seed/Random Action": action_selection})
 
             epsilon_instantiate = epsilon_greedy()
             epsilon = epsilon_instantiate.epsilon_by_frame(frame_idx)
@@ -263,6 +264,8 @@ class gamma_train_epsilonseed():
             if frame_idx % 200 == 0:
                 plot(frame_idx, self.all_rewards, self.losses)
 
+        wandb.finish()
+        
         gamma_avg = sum(gamma_record)/len(gamma_record)
         rewards_avg = sum(reward_record)/len(reward_record)
         losses_avg = sum(losses_record)/len(losses_record)
