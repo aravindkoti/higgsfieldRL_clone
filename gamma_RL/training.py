@@ -151,7 +151,8 @@ class gamma_train_epsilonseed():
         self.all_rewards = []
 
     
-    def compute_td_loss(self, batch_size):
+    def compute_td_loss(self, batch_size, seed_number):
+        seed_everything(seed_number)
         state, action, reward, next_state, done = self.replay_buffer.sample(batch_size)
 
         state      = self.Variable(torch.FloatTensor(np.float32(state)))
@@ -212,7 +213,7 @@ class gamma_train_epsilonseed():
             epsilon_threshold = random.random()
             action_selection = random.randrange(self.environment.action_space.n)
             
-            if frame_idx%200 ==0:
+            if frame_idx%20 ==0:
                 wandb.log({"Epsilon Seed/Epsilon Threshold": epsilon_threshold})
                 wandb.log({"Epsilon Seed/Random Action": action_selection})
 
@@ -247,7 +248,7 @@ class gamma_train_epsilonseed():
                 episode_reward = 0
         
             if len(self.replay_buffer) > batch_size:
-                loss = self.compute_td_loss(batch_size)
+                loss = self.compute_td_loss(batch_size, seed_number=seed_vector[frame_idx])
                 self.losses.append(loss.data)
 
                 if wandb_plot:
