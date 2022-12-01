@@ -92,7 +92,7 @@ class training():
                 
                 if wandb_plot:
                     wandb.log({"Epsilon Seed/Rewards": episode_reward})
-                    wandb.log({"Epsilon Seed/Gamma": self.model.gamma.data})
+                    wandb.log({"Epsilon Seed/Gamma": self.gamma})
 
                 if tensorboard:
                     writer.add_scalar('Episode rewards', episode_reward, frame_idx)
