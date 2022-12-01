@@ -32,8 +32,13 @@ def plot(frame_idx, rewards, losses):
     plt.show()
 
 
-def seed_everything(seed):
+def seed_everything(seed, env = None):
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    env.seed(seed)
+    env.action_space.seed(seed)
+
 
