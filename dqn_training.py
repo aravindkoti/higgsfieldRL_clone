@@ -60,13 +60,12 @@ class training():
         return loss
 
     def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None,
-                        wandb_plot = False):
+                        wandb_plot = False, run_number=1):
         if wandb_plot:
             wandb.init(
-                project= "Cartpole Training",
-                name= "Run",
+                project= "Gamma Cartpole Training",
+                name= f"DQN Experiment_{run_number}",
                 config={
-                    "discount rate:": 0.99,
                     "environment": "CartPole-v0"
                 }
             )
@@ -92,7 +91,8 @@ class training():
                 self.all_rewards.append(episode_reward)
                 
                 if wandb_plot:
-                    wandb.log({"Rewards": episode_reward})
+                    wandb.log({"Epsilon Seed/Rewards": episode_reward})
+                    wandb.log({"Epsilon Seed/Gamma": self.model.gamma.data})
 
                 if tensorboard:
                     writer.add_scalar('Episode rewards', episode_reward, frame_idx)
@@ -106,7 +106,7 @@ class training():
                 self.losses.append(loss.data)
 
                 if wandb_plot:
-                    wandb.log({"Episode Losses": loss.data})
+                    wandb.log({"Epsilon Seed/Episode Losses": loss.data})
 
                 if tensorboard:
                     writer.add_scalar('Episode Losses', loss.data, frame_idx)
