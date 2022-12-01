@@ -202,20 +202,10 @@ class gamma_train_epsilonseed():
 
         state = self.environment.reset()
         for frame_idx in range(1, num_frames + 1):
-        
             
-            epsilon_threshold = random.random()
-            action_selection = random.randrange(self.environment.action_space.n)
-            
-
             epsilon_instantiate = epsilon_greedy()
             epsilon = epsilon_instantiate.epsilon_by_frame(frame_idx)
             action = self.model.act(state, epsilon)
-            
-            if frame_idx%20 ==0:
-                wandb.log({"Epsilon Seed/Epsilon Threshold": epsilon_threshold})
-                wandb.log({"Epsilon Seed/Random Action": action})
-                
     
             next_state, reward, done, _ = self.environment.step(torch.tensor([[action]]).item())
             self.replay_buffer.push(state, action, reward, next_state, done)
