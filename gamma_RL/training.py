@@ -127,14 +127,14 @@ class gamma_train():
 
 #This is a model which matches the random processes between runs, so we can isolate the qualitative differences between gamma values
 class gamma_train_epsilonseed():
-    def __init__(self, environment, Variable, USE_CUDA, device, seed_number, gamma = 0.99):
+    def __init__(self, environment, Variable, USE_CUDA, device, gamma = 0.99):
       
         self.environment = environment
         self.Variable = Variable
         self.device = device
         self.model = gamma_DQN_epsilonseed(self.environment.observation_space.shape[0], 
                         self.environment.action_space.n, environment=self.environment,
-                        device=self.device, Variable=self.Variable, seed_number=seed_number)
+                        device=self.device, Variable=self.Variable)
         def CUDA():
             if USE_CUDA:
                 self.model = self.model.to(self.device)
