@@ -128,10 +128,7 @@ class gamma_train():
 #This is a model which matches the random processes between runs, so we can isolate the qualitative differences between gamma values
 class gamma_train_epsilonseed():
     def __init__(self, environment, Variable, USE_CUDA, device, seed_number, gamma = 0.99):
-        
-        def seed(seed_number):
-            seed_everything()
-
+      
         self.environment = environment
         self.Variable = Variable
         self.device = device
@@ -151,8 +148,8 @@ class gamma_train_epsilonseed():
         self.all_rewards = []
 
     
-    def compute_td_loss(self, batch_size, seed_number):
-        seed_everything(seed_number)
+    def compute_td_loss(self, batch_size):
+    
         state, action, reward, next_state, done = self.replay_buffer.sample(batch_size)
 
         state      = self.Variable(torch.FloatTensor(np.float32(state)))
@@ -185,7 +182,7 @@ class gamma_train_epsilonseed():
     
         return loss
 
-    def training_loop(self, num_frames, batch_size, seed_vector, tensorboard = False, writer=None, 
+    def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None, 
                         run_number = 1, wandb_plot=False):
 
         if wandb_plot:
@@ -206,9 +203,6 @@ class gamma_train_epsilonseed():
         state = self.environment.reset()
         for frame_idx in range(1, num_frames + 1):
         
-            #Randomness from seed in network works separately from training module. Want to
-            #preset the randomness here, so it obeys the random seed in each frame
-            seed_everything(seed_vector[frame_idx])
             
             epsilon_threshold = random.random()
             action_selection = random.randrange(self.environment.action_space.n)
@@ -216,13 +210,12 @@ class gamma_train_epsilonseed():
 
             epsilon_instantiate = epsilon_greedy()
             epsilon = epsilon_instantiate.epsilon_by_frame(frame_idx)
-            action = self.model.act(state, epsilon, threshold=epsilon_threshold,
-                                        random_select=action_selection)
+            action = self.model.act(state, epsilon)
             
-            if {frame_idx%20 ==0 and epsilon_threshold<epsilon}:
+            if frame_idx%20 ==0:
                 wandb.log({"Epsilon Seed/Epsilon Threshold": epsilon_threshold})
-                wandb.log({"Epsilon Seed/Random Action": action.data})
-            
+                wandb.log({"Epsilon Seed/Random Action": action})
+                
     
             next_state, reward, done, _ = self.environment.step(torch.tensor([[action]]).item())
             self.replay_buffer.push(state, action, reward, next_state, done)
@@ -249,7 +242,7 @@ class gamma_train_epsilonseed():
                 episode_reward = 0
         
             if len(self.replay_buffer) > batch_size:
-                loss = self.compute_td_loss(batch_size, seed_number=seed_vector[frame_idx])
+                loss = self.compute_td_loss(batch_size)
                 self.losses.append(loss.data)
 
                 if wandb_plot:

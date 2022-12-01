@@ -66,12 +66,12 @@ class gamma_DQN_epsilonseed(nn.Module):
     def forward(self, x):
         return self.gamma * self.layers(x)
     
-    def act(self, state, epsilon, threshold, random_select):
+    def act(self, state, epsilon):
 
-        if threshold > epsilon:
+        if random.random() > epsilon:
             state   = self.Variable(torch.FloatTensor(state).unsqueeze(0), volatile=True)
             q_value = self.forward(state)
             action  = q_value.max(1)[1].data[0]
         else:
-            action = random_select
+            action = random.randrange(self.environment.action_space.n)
         return action
