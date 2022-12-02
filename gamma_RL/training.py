@@ -226,7 +226,7 @@ class gamma_train_epsilonseed():
                     writer.add_scalar(f'Episode rewards run {run_number}', episode_reward, frame_idx)
                     writer.add_scalar(f'Gamma run {run_number}', self.gamma, frame_idx)
 
-                if (num_frames + 1) - frame_idx < 200:
+                if (num_frames + 1) - frame_idx < 1000:
                     gamma_record.append(self.model.gamma.data)
                     reward_record.append(episode_reward)
 
@@ -242,7 +242,7 @@ class gamma_train_epsilonseed():
                 if tensorboard:
                     writer.add_scalar(f'Episode Losses run {run_number}',loss.data, frame_idx)
 
-                if (num_frames + 1) - frame_idx < 200:
+                if (num_frames + 1) - frame_idx < 1000:
                     losses_record.append(loss.data)
 
 
