@@ -226,6 +226,7 @@ class gamma_train_epsilonseed():
                     writer.add_scalar(f'Episode rewards run {run_number}', episode_reward, frame_idx)
                     writer.add_scalar(f'Gamma run {run_number}', self.gamma, frame_idx)
 
+                #Appending average gamma and reward values from last 1000 trials
                 if (num_frames + 1) - frame_idx < 1000:
                     gamma_record.append(self.model.gamma.data)
                     reward_record.append(episode_reward)
@@ -242,6 +243,7 @@ class gamma_train_epsilonseed():
                 if tensorboard:
                     writer.add_scalar(f'Episode Losses run {run_number}',loss.data, frame_idx)
 
+                #Appending average loss value from last 1000 trials
                 if (num_frames + 1) - frame_idx < 1000:
                     losses_record.append(loss.data)
 
@@ -250,8 +252,8 @@ class gamma_train_epsilonseed():
             if frame_idx % 200 == 0:
                 plot(frame_idx, self.all_rewards, self.losses)
 
-        wandb.finish()
-        
+
+        #Plotting averages of metrics into a histogram
         gamma_avg = sum(gamma_record)/len(gamma_record)
         rewards_avg = sum(reward_record)/len(reward_record)
         losses_avg = sum(losses_record)/len(losses_record)
@@ -259,3 +261,23 @@ class gamma_train_epsilonseed():
         hist_vector_gamma.append(gamma_avg)
         hist_vector_rewards.append(rewards_avg)
         hist_vector_losses.append(losses_avg)
+
+        data_gamma = [[s] for s in hist_vector_gamma]
+        data_rewards = [[s] for s in hist_vector_rewards]
+        data_losses = [[s] for s in hist_vector_losses]
+
+        table_gamma = wandb.Table(data=data_gamma, columns=["Average"])
+        wandb.log({'Histograms/Gamma Averages': wandb.plot.histogram(table_gamma,"Average",
+                title="Ending gamma values")})
+
+        table_rewards = wandb.Table(data=data_rewards, columns=["Average"])
+        wandb.log({'Histograms/Reward Averages': wandb.plot.histogram(table_rewards,"Average",
+                title="Ending reward values")})
+
+        table_losses = wandb.Table(data=data_losses, columns=["Average"])
+        wandb.log({'Histograms/Losses Averages': wandb.plot.histogram(table_losses,"Average",
+                title="Ending loss values")})
+
+
+
+        wandb.finish()
