@@ -134,7 +134,7 @@ class gamma_train_epsilonseed():
         self.device = device
         self.model = gamma_DQN_epsilonseed(self.environment.observation_space.shape[0], 
                         self.environment.action_space.n, environment=self.environment,
-                        device=self.device, Variable=self.Variable)
+                        device=self.device, Variable=self.Variable, gamma=gamma)
         def CUDA():
             if USE_CUDA:
                 self.model = self.model.to(self.device)
@@ -183,7 +183,8 @@ class gamma_train_epsilonseed():
         return loss
 
     def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None, 
-                        run_number = 1, wandb_plot=False):
+                        run_number = 1, wandb_plot=False, hist_vector_gamma = None,
+                        hist_vector_rewards = None, hist_vector_losses = None):
 
         if wandb_plot:
             wandb.init(
@@ -254,3 +255,7 @@ class gamma_train_epsilonseed():
         gamma_avg = sum(gamma_record)/len(gamma_record)
         rewards_avg = sum(reward_record)/len(reward_record)
         losses_avg = sum(losses_record)/len(losses_record)
+
+        hist_vector_gamma.append(gamma_avg)
+        hist_vector_rewards.append(rewards_avg)
+        hist_vector_losses.append(losses_avg)
