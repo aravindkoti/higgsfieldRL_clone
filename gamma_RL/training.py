@@ -139,7 +139,10 @@ class gamma_train_epsilonseed():
             if USE_CUDA:
                 self.model = self.model.to(self.device)
         
-        self.optimizer = optim.Adam(self.model.parameters())
+        self.optimizer = optim.Adam([
+                                        {'params': self.model.gamma, 'lr': 0.002},
+                                        {'params': self.model.layers.parameters(), 'lr': 0.001}
+                                        ], lr=0.01)
         self.replay_buffer = ReplayBuffer(1000)
 
         self.gamma = self.model.gamma
