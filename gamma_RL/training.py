@@ -140,7 +140,7 @@ class gamma_train_epsilonseed():
                 self.model = self.model.to(self.device)
         
         self.optimizer = optim.Adam([
-                                        {'params': self.model.gamma, 'lr': 0.002},
+                                        {'params': self.model.gamma, 'lr': 0.001},
                                         {'params': self.model.layers.parameters(), 'lr': 0.001}
                                         ], lr=0.01)
         self.replay_buffer = ReplayBuffer(1000)
@@ -186,8 +186,9 @@ class gamma_train_epsilonseed():
         return loss
 
     def training_loop(self, num_frames, batch_size, tensorboard = False, writer=None, 
-                        run_number = 1, wandb_plot=False, hist_vector_gamma = None,
-                        hist_vector_rewards = None, hist_vector_losses = None):
+                        run_number = 1, wandb_plot=False, plot_hist = False,
+                        hist_vector_gamma = None, hist_vector_rewards = None, 
+                        hist_vector_losses = None):
 
         if wandb_plot:
             wandb.init(
@@ -257,29 +258,30 @@ class gamma_train_epsilonseed():
 
 
         #Plotting averages of metrics into a histogram
-        gamma_avg = sum(gamma_record)/len(gamma_record)
-        rewards_avg = sum(reward_record)/len(reward_record)
-        losses_avg = sum(losses_record)/len(losses_record)
+        if plot_hist:
+            gamma_avg = sum(gamma_record)/len(gamma_record)
+            rewards_avg = sum(reward_record)/len(reward_record)
+            losses_avg = sum(losses_record)/len(losses_record)
 
-        hist_vector_gamma.append(gamma_avg)
-        hist_vector_rewards.append(rewards_avg)
-        hist_vector_losses.append(losses_avg)
+            hist_vector_gamma.append(gamma_avg)
+            hist_vector_rewards.append(rewards_avg)
+            hist_vector_losses.append(losses_avg)
 
-        data_gamma = [[s] for s in hist_vector_gamma]
-        data_rewards = [[s] for s in hist_vector_rewards]
-        data_losses = [[s] for s in hist_vector_losses]
+            data_gamma = [[s] for s in hist_vector_gamma]
+            data_rewards = [[s] for s in hist_vector_rewards]
+            data_losses = [[s] for s in hist_vector_losses]
 
-        table_gamma = wandb.Table(data=data_gamma, columns=["Average"])
-        wandb.log({'Histograms/Gamma Averages': wandb.plot.histogram(table_gamma,"Average",
-                title="Ending gamma values")})
+            table_gamma = wandb.Table(data=data_gamma, columns=["Average"])
+            wandb.log({'Histograms/Gamma Averages': wandb.plot.histogram(table_gamma,"Average",
+                    title="Ending gamma values")})
 
-        table_rewards = wandb.Table(data=data_rewards, columns=["Average"])
-        wandb.log({'Histograms/Reward Averages': wandb.plot.histogram(table_rewards,"Average",
-                title="Ending reward values")})
+            table_rewards = wandb.Table(data=data_rewards, columns=["Average"])
+            wandb.log({'Histograms/Reward Averages': wandb.plot.histogram(table_rewards,"Average",
+                    title="Ending reward values")})
 
-        table_losses = wandb.Table(data=data_losses, columns=["Average"])
-        wandb.log({'Histograms/Losses Averages': wandb.plot.histogram(table_losses,"Average",
-                title="Ending loss values")})
+            table_losses = wandb.Table(data=data_losses, columns=["Average"])
+            wandb.log({'Histograms/Losses Averages': wandb.plot.histogram(table_losses,"Average",
+                    title="Ending loss values")})
 
 
 
