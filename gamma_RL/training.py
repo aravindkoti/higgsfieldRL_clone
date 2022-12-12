@@ -140,7 +140,7 @@ class gamma_train_epsilonseed():
                 self.model = self.model.to(self.device)
         
         self.optimizer = optim.Adam([
-                                        {'params': self.model.gamma, 'lr': 0.001},
+                                        {'params': self.model.gamma, 'lr': 0.0015},
                                         {'params': self.model.layers.parameters(), 'lr': 0.001}
                                         ], lr=0.01)
         self.replay_buffer = ReplayBuffer(1000)
@@ -180,8 +180,8 @@ class gamma_train_epsilonseed():
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-        with torch.no_grad():
-            torch.clamp(self.model.gamma, min=0.0, max=1.0)
+        #with torch.no_grad():
+            #torch.clamp(self.model.gamma, min=0.0, max=1.0)
     
         return loss
 
@@ -207,6 +207,10 @@ class gamma_train_epsilonseed():
 
         state = self.environment.reset()
         for frame_idx in range(1, num_frames + 1):
+            
+            #Clamping gamma here instead of in optimizer
+            #with torch.no_grad():
+                #self.model.gamma = self.model.gamma.clamp(min=0.0, max=1.0)
             
             epsilon_instantiate = epsilon_greedy()
             epsilon = epsilon_instantiate.epsilon_by_frame(frame_idx)
@@ -272,15 +276,15 @@ class gamma_train_epsilonseed():
             data_losses = [[s] for s in hist_vector_losses]
 
             table_gamma = wandb.Table(data=data_gamma, columns=["Average"])
-            wandb.log({'Histograms/Gamma Averages': wandb.plot.histogram(table_gamma,"Average",
+            wandb.log({'Histograms/Gamma Averages-lr=0.0015': wandb.plot.histogram(table_gamma,"Average",
                     title="Ending gamma values")})
 
             table_rewards = wandb.Table(data=data_rewards, columns=["Average"])
-            wandb.log({'Histograms/Reward Averages': wandb.plot.histogram(table_rewards,"Average",
+            wandb.log({'Histograms/Reward Averages-lr=0.0015': wandb.plot.histogram(table_rewards,"Average",
                     title="Ending reward values")})
 
             table_losses = wandb.Table(data=data_losses, columns=["Average"])
-            wandb.log({'Histograms/Losses Averages': wandb.plot.histogram(table_losses,"Average",
+            wandb.log({'Histograms/Losses Averages-lr=0.0015': wandb.plot.histogram(table_losses,"Average",
                     title="Ending loss values")})
 
 
