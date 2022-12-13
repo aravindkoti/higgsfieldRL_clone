@@ -180,8 +180,14 @@ class gamma_train_epsilonseed():
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-        #with torch.no_grad():
-            #torch.clamp(self.model.gamma, min=0.0, max=1.0)
+        
+        if self.model.gamma.data > 1.0:
+            with torch.no_grad():
+                self.model.gamma = nn.Parameter(torch.tensor(0.999), requires_grad=True)
+
+        if self.model.gamma.data < 0.0:
+            with torch.no_grad():
+                self.model.gamma = nn.Parameter(torch.tensor(0.001), requires_grad = True)
     
         return loss
 
